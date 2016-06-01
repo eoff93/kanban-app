@@ -26,16 +26,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var App = function (_React$Component) {
   _inherits(App, _React$Component);
 
-  function App() {
+  function App(props) {
     _classCallCheck(this, App);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(App).apply(this, arguments));
-  }
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this, props));
 
-  _createClass(App, [{
-    key: 'render',
-    value: function render() {
-      var notes = [{
+    _this.state = {
+      notes: [{
         id: _nodeUuid2.default.v4(),
         task: 'Learn Webpack'
       }, {
@@ -44,7 +41,16 @@ var App = function (_React$Component) {
       }, {
         id: _nodeUuid2.default.v4(),
         task: 'Do laundry'
-      }];
+      }]
+    };
+    return _this;
+  }
+
+  _createClass(App, [{
+    key: 'render',
+    value: function render() {
+      var notes = this.state.notes;
+
       return _react2.default.createElement(
         'div',
         null,
