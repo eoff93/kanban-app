@@ -31,6 +31,15 @@ var App = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this, props));
 
+    _this.addNote = function () {
+      _this.setState({
+        notes: _this.state.notes.concat([{
+          id: _nodeUuid2.default.v4(),
+          task: 'New Task'
+        }])
+      });
+    };
+
     _this.state = {
       notes: [{
         id: _nodeUuid2.default.v4(),
@@ -54,6 +63,11 @@ var App = function (_React$Component) {
       return _react2.default.createElement(
         'div',
         null,
+        _react2.default.createElement(
+          'button',
+          { onClick: this.addNote },
+          '+'
+        ),
         _react2.default.createElement(
           'ul',
           null,
