@@ -7,13 +7,13 @@ exports.default = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _nodeUuid = require('node-uuid');
-
-var _nodeUuid2 = _interopRequireDefault(_nodeUuid);
-
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
+
+var _uuid = require('uuid');
+
+var _uuid2 = _interopRequireDefault(_uuid);
 
 var _Notes = require('./Notes');
 
@@ -36,23 +36,66 @@ var App = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this, props));
 
     _this.addNote = function () {
+      // It would be possible to write this in an imperative style.
+      // I.e., through `this.state.notes.push` and then
+      // `this.setState({notes: this.state.notes})` to commit.
+      //
+      // I tend to favor functional style whenever that makes sense.
+      // Even though it might take more code sometimes, I feel
+      // the benefits (easy to reason about, no side effects)
+      // more than make up for it.
+      //
+      // Libraries, such as Immutable.js, go a notch further.
       _this.setState({
         notes: _this.state.notes.concat([{
-          id: _nodeUuid2.default.v4(),
-          task: 'New Task'
+          id: _uuid2.default.v4(),
+          task: 'New task'
         }])
+      });
+    };
+
+    _this.deleteNote = function (id, e) {
+      // Avoid bubbling to edit
+      e.stopPropagation();
+
+      _this.setState({
+        notes: _this.state.notes.filter(function (note) {
+          return note.id !== id;
+        })
+      });
+    };
+
+    _this.activateNoteEdit = function (id) {
+      _this.setState({
+        notes: _this.state.notes.map(function (note) {
+          if (note.id === id) {
+            note.editing = true;
+          }
+
+          return note;
+        })
+      });
+    };
+
+    _this.editNote = function (id, task) {
+      _this.setState({
+        notes: _this.state.notes.map(function (note) {
+          if (note.id === id) {
+            note.editing = false;
+            note.task = task;
+          }
+
+          return note;
+        })
       });
     };
 
     _this.state = {
       notes: [{
-        id: _nodeUuid2.default.v4(),
-        task: 'Learn Webpack'
-      }, {
-        id: _nodeUuid2.default.v4(),
+        id: _uuid2.default.v4(),
         task: 'Learn React'
       }, {
-        id: _nodeUuid2.default.v4(),
+        id: _uuid2.default.v4(),
         task: 'Do laundry'
       }]
     };
@@ -64,15 +107,21 @@ var App = function (_React$Component) {
     value: function render() {
       var notes = this.state.notes;
 
+
       return _react2.default.createElement(
         'div',
         null,
         _react2.default.createElement(
           'button',
-          { onClick: this.addNote },
+          { className: 'add-note', onClick: this.addNote },
           '+'
         ),
-        _react2.default.createElement(_Notes2.default, { notes: notes })
+        _react2.default.createElement(_Notes2.default, {
+          notes: notes,
+          onNoteClick: this.activateNoteEdit,
+          onEdit: this.editNote,
+          onDelete: this.deleteNote
+        })
       );
     }
   }]);
